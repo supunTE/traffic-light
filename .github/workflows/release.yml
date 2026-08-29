@@ -1,0 +1,81 @@
+name: Release
+
+# Fires on a pushed v* tag. There is nothing to attach — Traffic Light is
+# compiled on the user's machine by `install.sh`, so there is no zip, no
+# notarized bundle, and nothing for a runner to hand out.
+#
+# Which is exactly why this exists. Because every install runs `swift build`,
+# **the tagged commit compiling is the whole of the quality gate**. A tag that
+# does not build is not a bad artifact, it is a broken install for everyone
+# who runs the command, discovered one user at a time. The runner is the only
+# place that gets checked before they do.
+on:
+  push:
+    tags:
+      - 'v*'
+  # Dry run: the same build, without the tag checks or the publish.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # macOS because the daemon is AppKit. It costs 10x the Actions minutes of a
+    # Linux runner, which is why releases build here and pushes do not.
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # package.json is the one place the version is written, so a tag that
+      # disagrees with it means the app would announce a version nobody
+      # released. Cheap check, and it catches the most common release mistake.
+      - name: Check the tag matches package.json
+        if: github.ref_type == 'tag'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag v$TAG does not match package.json version $PKG" >&2
+            exit 1
+          fi
+          echo "version $PKG"
+
+      # The notes are the release. Tagging without writing them is the other
+      # half of the same mistake, so it fails here rather than producing a
+      # release body that says nothing.
+      - name: Check the release notes exist
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          MINOR="$(echo "$VERSION" | cut -d. -f1-2)"
+          NOTES="releases/$MINOR/$VERSION.md"
+          if [ ! -f "$NOTES" ]; then
+            echo "::error::No release notes at $NOTES" >&2
+            exit 1
+          fi
+          echo "NOTES=$NOTES" >> "$GITHUB_ENV"
+
+      - name: Show the toolchain
+        run: swift --version
+
+      # Exactly what a user's `install.sh` runs, so a failure here is a failure
+      # there.
+      - name: Build the daemon
+        run: swift build -c release --package-path daemon
+
+      # Not the release build: `doctor` on a runner has no daemon and no
+      # sessions, so this only proves the binary starts and its CLI answers.
+      - name: Check the binary runs
+        run: ./daemon/.build/release/traffic-light --help
+
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "$NOTES" \
+            --verify-tag

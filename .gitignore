@@ -1,0 +1,24 @@
+# Local working files, not part of what ships.
+.scratch/
+CONTEXT.md
+
+# Everything under docs/ except the one file that ships. Written as an
+# exclude-then-readmit rather than a list, so whatever lands there next is
+# ignored by default instead of waiting for someone to notice it.
+docs/*
+!docs/SETUP.md
+
+# Machine-specific overrides and local tooling.
+.claude/
+
+# npm pack output
+*.tgz
+node_modules/
+
+# SwiftPM build products
+daemon/.build/
+daemon/.swiftpm/
+
+__pycache__/
+*.pyc
+.DS_Store

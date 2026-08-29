@@ -1,0 +1,51 @@
+{
+  "name": "agent-traffic-light",
+  "version": "1.0.0",
+  "description": "Ambient status for coding agents. A coloured light per session, a bell on the transitions that matter, and a push to your phone \u2014 so you can leave the desk and be pulled back only when a session actually needs you.",
+  "bin": {
+    "agent-traffic-light": "bin/cli.js"
+  },
+  "scripts": {
+    "prepublishOnly": "node scripts/check-package.mjs"
+  },
+  "files": [
+    "assets",
+    "bin",
+    "daemon/Package.swift",
+    "daemon/Sources",
+    "hooks",
+    ".claude-plugin",
+    "scripts",
+    "!scripts/check-package.mjs",
+    "install.sh",
+    "LICENSE"
+  ],
+  "os": [
+    "darwin"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "author": "supunTE",
+  "homepage": "https://github.com/supunTE/traffic-light",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/supunTE/traffic-light.git"
+  },
+  "bugs": {
+    "url": "https://github.com/supunTE/traffic-light/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude",
+    "coding-agent",
+    "status",
+    "menu-bar",
+    "notifications",
+    "ntfy",
+    "hooks",
+    "macos",
+    "ambient"
+  ]
+}

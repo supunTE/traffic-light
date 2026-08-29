@@ -1,0 +1,18 @@
+{
+  "name": "traffic-light",
+  "version": "1.0.0",
+  "description": "Ambient status for Claude Code. A coloured light per session, a bell on the transitions that matter, and a push to your phone \u2014 so you can leave the desk and be pulled back only when a session actually needs you.",
+  "author": {
+    "name": "supunTE"
+  },
+  "repository": "https://github.com/supunTE/traffic-light",
+  "license": "MIT",
+  "keywords": [
+    "status",
+    "menu-bar",
+    "notifications",
+    "hooks",
+    "macos",
+    "ambient"
+  ]
+}

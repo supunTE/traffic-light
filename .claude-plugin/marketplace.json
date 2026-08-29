@@ -1,0 +1,14 @@
+{
+  "name": "traffic-light",
+  "owner": {
+    "name": "supunTE",
+    "url": "https://github.com/supunTE"
+  },
+  "plugins": [
+    {
+      "name": "traffic-light",
+      "source": "./",
+      "description": "Ambient status for Claude Code: a coloured light per session, a bell, and a phone push."
+    }
+  ]
+}
